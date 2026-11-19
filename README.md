@@ -5,7 +5,7 @@
 ## 当前功能
 
 - 租客端：区域、预算、户型、整租/合租和水电网物业筛选；房源详情与公开联系方式；收藏；提交真实看房咨询。
-- 运营端：运营后台入口仅对已登录管理员显示；发布房源与多张图片；上架、下架和移除；查看租客联系方式；通过电话、邮件或 WhatsApp 联系租客并标记跟进。
+- 运营端：运营后台入口仅对已登录管理员显示；发布房源与多张图片；编辑入住时间；上架、下架和移除；查看租客联系方式；通过电话、微信或 WhatsApp 联系租客并标记跟进。
 - 管理员：管理员可添加邮箱名单；对方确认邮箱后会自动获得运营权限。移除名单会撤销通过该邀请获得的权限。
 - 个人中心：租客可邮箱注册/登录，设置显示名称和头像。
 - 密码重置：验证 Supabase 恢复链接，并在 `reset.html` 安全更新账号密码。
@@ -16,21 +16,22 @@
 1. 创建 Supabase 项目。如果主要服务马德里/欧盟用户，建项目时选具体欧盟区域（例如 Paris 或 Frankfurt）。
 2. 在项目的 SQL Editor 执行 `supabase/schema.sql`。
 3. 对已有数据库执行 `supabase/listing-contact.sql`，新增房源公开联系方式字段。
-4. 执行 `supabase/avatars.sql`，为租客头像创建独立图片空间（每人只能管理自己的头像）。
-5. 在 Supabase Authentication 中创建你的运营者邮箱账号。然后在 SQL Editor 中为该账号添加运营者身份：
+4. 对已有数据库执行 `supabase/listing-move-in-wechat.sql`，启用可编辑入住时间和微信咨询渠道。
+5. 执行 `supabase/avatars.sql`，为租客头像创建独立图片空间（每人只能管理自己的头像）。
+6. 在 Supabase Authentication 中创建你的运营者邮箱账号。然后在 SQL Editor 中为该账号添加运营者身份：
 
    ```sql
    insert into public.profiles (id, role)
    select id, 'operator' from auth.users where email = '你的运营者邮箱';
    ```
 
-6. 执行 `supabase/admins.sql`，启用管理员邮箱邀请和注册时自动分配运营权限。之后你可在后台“管理员”版块添加其他邮箱。请在对方注册前加入名单。
-7. 从 Supabase 项目 Connect 对话框复制 Project URL 和 publishable key，填入 `config.js` 的 `supabaseUrl` 和 `supabasePublishableKey`。这里只能放公开 publishable key；**绝不要放 secret/service_role 密钥**。数据库 RLS 策略负责控制权限。
-8. 将整个文件夹部署到静态网站托管并绑定自己的域名。这个版本没有构建步骤；可导入 Git 仓库部署。不要用 `file://` 测试在线数据库，需通过 HTTP/HTTPS 地址打开。
-9. 部署完成后，在 Supabase Authentication → URL Configuration 中将 Site URL 改成部署后的 HTTPS 网站地址，并将该网站地址及 `/reset.html` 加入 Redirect URLs。开发预览时使用正确运行中的 `http://localhost:3000`，不要让用户点到一个没有启动的 localhost 地址。
-10. 完成隐私说明：将 `privacy.html` 方括号中的运营主体、联系邮箱、保存期限及服务商信息换成真实内容，并在公开收集租客联系方式前确认政策准确。
+7. 执行 `supabase/admins.sql`，启用管理员邮箱邀请和注册时自动分配运营权限。之后你可在后台“管理员”版块添加其他邮箱。请在对方注册前加入名单。
+8. 从 Supabase 项目 Connect 对话框复制 Project URL 和 publishable key，填入 `config.js` 的 `supabaseUrl` 和 `supabasePublishableKey`。这里只能放公开 publishable key；**绝不要放 secret/service_role 密钥**。数据库 RLS 策略负责控制权限。
+9. 将整个文件夹部署到静态网站托管并绑定自己的域名。这个版本没有构建步骤；可导入 Git 仓库部署。不要用 `file://` 测试在线数据库，需通过 HTTP/HTTPS 地址打开。
+10. 部署完成后，在 Supabase Authentication → URL Configuration 中将 Site URL 改成部署后的 HTTPS 网站地址，并将该网站地址及 `/reset.html` 加入 Redirect URLs。开发预览时使用正确运行中的 `http://localhost:3000`，不要让用户点到一个没有启动的 localhost 地址。
+11. 完成隐私说明：将 `privacy.html` 方括号中的运营主体、联系邮箱、保存期限及服务商信息换成真实内容，并在公开收集租客联系方式前确认政策准确。
 
-完成以上设置后，运营者可登录后台发布真实房源；租客提交的咨询会写入数据库并显示在后台。回复由运营者通过租客选择的电话、邮件或 WhatsApp 渠道处理，网站不会自动代发消息。
+完成以上设置后，运营者可登录后台发布真实房源；租客提交的咨询会写入数据库并显示在后台。租客可选择电话、微信或 WhatsApp 联系，回复由运营者处理，网站不会自动代发消息。
 
 ## 上线前要补齐
 
