@@ -20,7 +20,7 @@ create table if not exists public.listings (
   address text not null,
   contact_info varchar(200),
   move_in_info varchar(100) not null default '可协商',
-  tag text not null default '竹韵房源',
+  tag text not null default '华西找房',
   image_urls text[] not null default '{}',
   description text not null default '',
   status text not null default 'draft' check (status in ('draft', 'published', 'unlisted')),
